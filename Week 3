@@ -1,57 +1,15 @@
-Week 3 PwnDriveA Academy
+# PwnDrive Academy: Week 3 - Full Penetration Testing Write-up
 
-🔍 Phase 1: Reconnaissance & Enumeration
-Network Scanning
-I initiated the engagement with an Nmap scan to identify open ports and services.
+## 🎯 Project Overview
+This repository documents the security assessment and exploitation of the **PwnDrive** server (`10.150.150.11`). The assessment covers network reconnaissance, web enumeration, exploitation of broken access controls, and achieving Remote Code Execution (RCE).
 
-Command:
+---
 
-Bash
+## 🔍 Phase 1: Reconnaissance & Enumeration
+
+### 1.1 Network Scanning (Nmap)
+Initial scanning was performed to identify open ports, services, and the target operating system.
+
+**Command:**
+```bash
 nmap -sC -sV -Pn -vv 10.150.150.11
-Findings:
-
-Operating System: Windows Server 2008 R2 Enterprise SP1.
-
-Web Services: Port 80 (HTTP) and Port 443 (HTTPS) are active.
-
-Database: Port 3306 (MySQL) and Port 1433 (MSSQL).
-
-Remote Management: Port 3389 (RDP) is open.
-
-SMB: Port 445 is open with Message Signing Disabled, which is a significant security risk.
-
-Directory Brute-Forcing
-To find hidden paths, I used Gobuster with a common wordlist.
-
-Command:
-
-Bash
-gobuster dir -u http://10.150.150.11/ -w /usr/share/wordlists/dirb/common.txt
-Key Discoveries:
-
-/admin (Status: 301)
-
-/upload (Status: 301)
-
-/vendor (Status: 301)
-
-🛠️ Phase 2: Vulnerability Discovery
-Directory Listing Enabled
-Upon navigating to the discovered directories, I found that Directory Listing was enabled on the Apache server. This allowed me to view the underlying file structure of the application without any authentication.
-
-/admin/: Contained critical PHP files: addedituser.php, deleteuser.php, and manageusers.php.
-
-/upload/: Contained user-specific subdirectories, potentially exposing sensitive files.
-
-🚀 Phase 3: Exploitation & Gaining Access
-Broken Access Control
-The application failed to implement proper session validation on the administrative pages. By directly navigating to http://10.150.150.11/admin/manageusers.php, I was granted access to the user management dashboard without logging in.
-
-Account Creation
-Using the unprotected addedituser.php page, I was able to:
-
-Create a new user.
-
-Assign the admin role to the account.
-
-I successfully created an account named testuser1 with administrative privileges, as confirmed in the Manage Users table.
